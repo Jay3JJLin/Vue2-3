@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>08-Vue 指令-v-on-配置methods函数</title>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 这里的fn要和下面methods中的函数名fn相同 -->
+    <button @click="fn">切换显示隐藏</button>
+    <h1 v-show="isShow">玛卡巴卡</h1>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+  <script>
+    // vue里面的处理程序都挂在vue实例上
+    const app = new Vue({
+      el: '#app',
+      data: {
+        isShow: false
+      },
+      methods: {
+        // fn: x => {
+        //   // console.log('执行fn', app.isShow);
+        //   // app.isShow = !app.isShow //直接取反，实现相互切换
+        //   // this.isShow = !this.isShow //无效
+        // }
+
+        fn() {
+          // console.log('执行fn', app.isShow);
+          // console.log(app === this); //true
+          // vue让methods中所有提供的函数，this都指向当前实例
+          this.isShow = !this.isShow //直接取反，实现相互切换
+        }
+
+        // 注意：内联语句可以直接访问data里的数据，但函数不能，必须通过Vue实例进行访问
+      },
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+Vue 指令 v-on
+1. 作用： 注册事件 = 添加监听 + 提供处理逻辑
+2. 语法：
+① v-on:事件名 = "内联语句"
+② v-on:事件名 = "methods中的函数名"
+3. 简写：@事件名
+4. 注意：methods函数内的 this 指向 Vue 实例
+ -->

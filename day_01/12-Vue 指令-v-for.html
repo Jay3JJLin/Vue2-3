@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>12-Vue 指令-v-for.html</title>
+  <style>
+    li {
+      list-style: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <h3>有个小黑子前来买瓜</h3>
+    <ul>
+      <li v-for="(item,index) in list">
+        <!-- item 是数组中的每一项(取出的)元素，index是数组下标，从0开始，与forEach类似 -->
+        {{ item }}--{{ index }}
+      </li>
+    </ul>
+    <ul>
+      <li v-for="item in list">
+        <!-- item 是数组中的每一项(取出的)元素，index是数组下标，从0开始 -->
+        {{ item }}
+      </li>
+    </ul>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        list: ['伞兵', '呱', '就是歌姬']
+      }
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+Vue 指令 v-for
+1. 作用： 基于数据循环， 多次渲染整个元素 → 数组、对象、数字... 
+2. 遍历数组语法：
+v-for = "(item, index) in 数组"
+Ø item 每一项， index 下标
+Ø 省略 index: v-for = "item in 数组"
+ -->

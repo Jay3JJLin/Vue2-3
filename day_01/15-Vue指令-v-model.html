@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>15-Vue指令-v-model</title>
+</head>
+
+<body>
+  <!-- 
+    v-model 可以让数据和视图，形成双向数据绑定
+    (1) 数据变化，视图自动更新
+    (2) 视图变化，数据自动更新
+    可以快速[获取]或[设置]表单元素的内容
+  -->
+  <div id="app">
+    账户：<input type="text" v-model="username"> <br><br>
+    密码：<input type="password" name="" id="" v-model="password"> <br><br>
+    <button @click="login">登录</button>
+    <button @click="reset">重置</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        username: '呱',
+        password: '123456'
+      },
+      methods: {
+        login() {
+          // 有数据是双向绑定的，app实例中就有数据了，可以直接获取
+          console.log(this.username, this.password);
+        },
+        reset() {
+          this.username = ''
+          this.password = ''
+        }
+      },
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+Vue 指令 v-model
+1. 作用: 给 表单元素 使用, 双向数据绑定 → 可以快速 获取 或 设置 表单元素内容
+① 数据变化 → 视图自动更新
+② 视图变化 → 数据自动更新
+2. 语法: v-model = '变量'
+ -->

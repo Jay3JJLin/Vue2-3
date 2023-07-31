@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10-Vue 指令-v-bind</title>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 相当于动态设置标签值，不会写死 -->
+    <!-- v-bind:src   =>   :src -->
+    <img v-bind:src="imgUrl" :title="msg" alt="">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        imgUrl: './imgs/10-01.png',
+        msg: '呱，波仔'
+      },
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+Vue 指令 v-bind
+1. 作用： 动态的设置html的标签属性 → src url title ... 
+2. 语法： v-bind:属性名="表达式"
+3. 注意： 简写形式 :属性名="表达式"
+ -->

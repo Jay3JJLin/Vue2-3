@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>07-Vue 指令-v-on-内联语句</title>
+</head>
+
+<body>
+  <div id="app">
+    <!-- v-on:事件名 = "内联语句" -->
+    <!-- 为了方便，可以将 v-on: 替换为 @  ，即为 @事件名-->
+    <!-- 内联语句可以直接访问data里的数据 -->
+    <button @mouseenter="count--">-</button>
+    <span>{{ count }}</span>
+    <button v-on:click="count++">+</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        count: 100
+      }
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+Vue 指令 v-on
+1. 作用： 注册事件 = 添加监听 + 提供处理逻辑
+2. 语法：
+① v-on:事件名 = "内联语句"
+② v-on:事件名 = "methods中的函数名"
+3. 简写：@事件名
+
+内联语句：指在程序中直接使用的语句，而不是通过函数或方法进行封装和调用的语句---》说白了就是能够直接执行的语句
+ -->
