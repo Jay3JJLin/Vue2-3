@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    textarea {
+      display: block;
+      width: 240px;
+      height: 100px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <h3>小黑学习网</h3>
+
+    姓名：
+    <input type="text" v-model="username">
+    <br><br>
+
+    是否单身：
+    <input type="checkbox" v-model="isSingle">
+    <br><br>
+
+    <!-- 
+      前置理解：
+        1. name:  给单选框加上 name 属性 可以分组 → 同一组互相会互斥(只能选一个)
+        2. value: 给单选框加上 value 属性，用于提交给后台的数据
+      结合 Vue 使用 → v-model
+    -->
+    性别:
+    <!-- 后面的男/女 只是给用户一个提示，给后台提交数据还是要value -->
+    <input v-model="gender" type="radio" name="gender" value="1">男
+    <input v-model="gender" type="radio" name="gender" value="2">女
+    <br><br>
+
+    <!-- 
+      前置理解：
+        1. option 需要设置 value 值，提交给后台
+        2. select 的 value 值，关联了选中的 option 的 value 值
+      结合 Vue 使用 → v-model
+    -->
+    所在城市:
+    <select v-model="cityId">
+      <option value="101">北京</option>
+      <option value="102">上海</option>
+      <option value="103">成都</option>
+      <option value="104">南京</option>
+    </select>
+    <br><br>
+
+    自我描述：
+    <textarea v-model="desc"></textarea>
+
+    <button @click="register">立即注册</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        username: '伞兵一号',
+        isSingle: true,
+        gender: '1',
+        cityId: '101', // 本质上是动态设置量个复选框的value值
+        desc: '我是一个大sb'
+      },
+      // 点击注册按钮，获取数据提交给服务器
+      methods: {
+        register() {
+          console.log(this.username, this.isSingle, this.gender, this.cityId, this.desc)
+          // 将数据提交给服务器
+          alert('注册成功')
+          // 跳转到登录页面
+          // window.location.href = 'login.html'
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+v-model 应用于其他表单元素
+常见的表单元素都可以用 v-model 绑定关联 → 快速 获取 或 设置 表单元素的值
+它会根据 控件类型 自动选取 正确的方法 来更新元素
+
+输入框 input:text       → value
+文本域 textarea         → value
+复选框 input:checkbox   → checked
+单选框 input:radio      → checked
+下拉菜单 select         → value
+...
+ -->

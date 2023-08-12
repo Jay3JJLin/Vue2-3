@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: 18px;
+    }
+
+    #app {
+      padding: 10px 20px;
+    }
+
+    .query {
+      margin: 10px 0;
+    }
+
+    .box {
+      display: flex;
+    }
+
+    textarea {
+      width: 300px;
+      height: 160px;
+      font-size: 18px;
+      border: 1px solid #dedede;
+      outline: none;
+      resize: none;
+      padding: 10px;
+    }
+
+    textarea:hover {
+      border: 1px solid #1589f5;
+    }
+
+    .transbox {
+      width: 300px;
+      height: 160px;
+      background-color: #f0f0f0;
+      padding: 10px;
+      border: none;
+    }
+
+    .tip-box {
+      width: 300px;
+      height: 25px;
+      line-height: 25px;
+      display: flex;
+    }
+
+    .tip-box span {
+      flex: 1;
+      text-align: center;
+    }
+
+    .query span {
+      font-size: 18px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap span {
+      position: absolute;
+      right: 15px;
+      bottom: 15px;
+      font-size: 12px;
+    }
+
+    .input-wrap i {
+      font-size: 20px;
+      font-style: normal;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 条件选择框 -->
+    <div class="query">
+      <span>翻译成的语言：</span>
+      <!-- 形成双向绑定 select和option的value值相同 -->
+      <select v-model="obj.lang">
+        <option value="italy">意大利</option>
+        <option value="english">英语</option>
+        <option value="german">德语</option>
+      </select>
+    </div>
+
+    <!-- 翻译框 -->
+    <div class="box">
+      <div class="input-wrap">
+        <!-- <textarea v-model="words"></textarea> -->
+        <textarea v-model="obj.words"></textarea>
+        <span><i>⌨️</i>文档翻译</span>
+      </div>
+      <div class="output-wrap">
+        <div class="transbox">{{ result }}</div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // 接口地址：https://applet-base-api-t.itheima.net/api/translate
+    // 请求方式：get
+    // 请求参数：
+    // （1）words：需要被翻译的文本（必传）
+    // （2）lang： 需要被翻译成的语言（可选）默认值-意大利
+    // -----------------------------------------------
+
+    // 需求：输入内容，修改语言，都实时翻译
+    const app = new Vue({
+      el: '#app',
+      data: {
+        // words: '',
+        result: '', //翻译结果
+        // timer: '', //延时器id
+        obj: {
+          words: '苹果',
+          lang: 'italy'
+        }
+      },
+      // 具体讲解：(1) watch语法 (2) 具体业务实现
+      watch: {
+        // 完整写法
+        obj: {
+          deep: true, // 对复杂类型深度监视（监视所有）,相当于对 对象所有子属性都进行监视
+          immediate: true, // 初始化，一进入页面立刻执行一次handler方法(如果不加，则只会在数据修改时触发handler函数)
+          handler(newValue) {
+            // console.log('对象被修改了', newValue);
+            // 如果一段时间内触发了，需要将原来的延时器清除
+            clearTimeout(this.timer)
+            // 发送请求 防抖
+            this.timer = setTimeout(async () => { // 此时async必须和await同级
+              const res = await axios({
+                method: 'get',
+                url: 'https://applet-base-api-t.itheima.net/api/translate',
+                params: newValue //传入整个对象 { lang, words }
+                // params: {
+                //   words: this.obj.words,
+                //   lang: this.obj.lang
+                // }
+              })
+              this.result = res.data.data //更新返回值
+            }, 300)
+          }
+        }
+
+
+        // 该方法会在数据变化时调用执行
+        // newValue 新值，oldValue 老值（一般不用，所以可省略）
+        // words(newValue, oldValue) { // 新值和旧值会在数据变化时自动传入
+        //   console.log('变化了', newValue, oldValue);
+        // },
+
+
+        // 为减少服务器压力，需做防抖优化
+        // 防抖：延迟执行 -> 干啥事先等一等，延迟一会，一段时间内没有再次触发，才执行，常用延时器来实现
+        // 'obj.words'(newValue) { // 对对象里面的某个子属性，一定要加引号 ''
+        //   // console.log('变化了', newValue);
+
+        //   // 如果一段时间内触发了，需要将原来的延时器清除
+        //   clearTimeout(this.timer)
+        //   // 发送请求 防抖
+        //   this.timer = setTimeout(async () => { // 此时async必须和await同级
+        //     const res = await axios({
+        //       method: 'get',
+        //       url: 'https://applet-base-api-t.itheima.net/api/translate',
+        //       params: {
+        //         words: newValue
+        //       }
+        //     })
+        //     // console.log(res); // 是个Promise对象，里面的data有需要的数据
+        //     // console.log(res.data.data);//请求回来的翻译结果
+        //     this.result = res.data.data //更新返回值
+        //   }, 300)
+
+        //   // 这里的timer需注意，由于不需要timer渲染页面(无关的,非响应式数据)，只是作为属性接收数据，相当于直接挂到了app实例身上，(类似于往对象身上加了一个属性)，然后clearTimeout(this.timer)又相当于访问了这个对象属性
+        // }
+      }
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+watch 侦听器（监视器）
+作用：监视数据变化，执行一些 业务逻辑 或 异步操作。
+语法：
+① 简单写法 → 简单类型数据，直接监视
+② 完整写法 → 添加额外配置项
+
+① 简单写法 → 简单类型数据，直接监视
+watch: {
+// 该方法会在数据变化时，触发执行
+数据属性名 (newValue, oldValue) {
+一些业务逻辑 或 异步操作。
+},
+'对象.属性名' (newValue, oldValue) {
+一些业务逻辑 或 异步操作。
+}
+}
+
+② 完整写法 → 添加额外配置项
+(1) deep: true 对复杂类型深度监视
+(2) immediate: true 初始化立刻执行一次handler方法
+watch: {// watch 完整写法
+数据属性名: {
+deep: true, // 深度监视
+handler (newValue) {
+console.log(newValue)
+}
+}
+}
+
+watch侦听器的语法有几种？
+① 简单写法 → 监视简单类型的变化
+② 完整写法 → 添加额外的配置项 (深度监视复杂类型，立刻执行)
+
+// async关键字：用于定义一个函数为异步函数。异步函数在执行过程中会返回一个Promise对象，异步函数内部可以使用await来暂停函数的执行，并等待一个异步操作的结果
+// await关键字：用于等待一个Promise对象被解析或拒绝，并返回该Promise对象的解决值或拒绝原因。通过使用await，代码可以暂停执行，直到异步操作完成后再继续执行。
+
+防抖（debounce）是一种在事件频繁触发时，限制函数执行频率的方法。它的原理是在一定时间内，如果事件持续触发，则函数不会执行，直到事件停止触发一段时间后，才会执行函数。这在一些场景下非常有用，例如搜索框输入时的自动搜索，窗口大小调整等
+ -->

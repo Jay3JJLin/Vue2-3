@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04-案例-tab栏的active效果-静态结构</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    ul {
+      display: flex;
+      border-bottom: 2px solid #e01222;
+      padding: 0 10px;
+    }
+
+    li {
+      width: 100px;
+      height: 50px;
+      line-height: 50px;
+      list-style: none;
+      text-align: center;
+    }
+
+    li a {
+      display: block;
+      text-decoration: none;
+      font-weight: bold;
+      color: #333333;
+    }
+
+    li a.active {
+      background-color: #e01222;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <ul>
+      <li v-for="(item, index) in list" :key="item.id" @click="activeIndex = index">
+        <!-- 类名不写死，对于单个类，我们通常采才用对象的写法 -->
+        <a :class="{ active: index === activeIndex }" href="#">{{ item.name }}</a>
+      </li>
+    </ul>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        activeIndex: 0, //记录高亮的下标
+        list: [
+          { id: 1, name: '京东秒杀' },
+          { id: 2, name: '每日特价' },
+          { id: 3, name: '品类秒杀' }
+        ]
+
+      }
+    })
+  </script>
+</body>
+
+</html>
+
+<!--
+核心思路：
+1. 基于数据动态渲染 tab → v-for
+2. 准备下标记录高亮的是哪一个 tab → activeIndex
+3. 基于下标，动态控制 class 类名 → v-bind:class
+所谓切换高亮，其实就是改下标
+ -->

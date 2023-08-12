@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>05-v-bind对于样式style的控制</title>
+  <style>
+    .box {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 
+      :style="{} 中的键和值 必须符合css语法规范，就是css属性中有的" 
+      里面的是JS对象，不能带有- ,要加引号 或者 用驼峰写法
+      值 一定要加引号 ''
+    -->
+    <div class="box" :style="{ width: '400px', height: '400px', backgroundColor: 'green' }"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+
+      }
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+v-bind 对于样式控制的增强 - 操作style
+语法 :style = "样式对象"
+<div class="box" :style="{ CSS属性名1: CSS属性值, CSS属性名2: CSS属性值 }"></div>
+适用场景：某个具体属性的动态设置
+ -->

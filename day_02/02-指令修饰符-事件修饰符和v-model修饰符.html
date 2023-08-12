@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02-指令修饰符-事件修饰符和v-model修饰符</title>
+  <style>
+    .father {
+      width: 200px;
+      height: 200px;
+      background-color: pink;
+      margin-top: 20px;
+    }
+
+    .son {
+      width: 100px;
+      height: 100px;
+      background-color: skyblue;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h3>v-model修饰符 .trim .number</h3>
+    姓名：<input v-model.trim="username" type="text"><br>
+    年纪：<input v-model.number="age" type="text"><br>
+    <!-- 
+    trim 会去掉输入内容前后的空格，当输入的时候不会马上去除，一旦不输入(离开输入区域)就会去掉前后空格
+    number 只会将输入的数字 从字符串转为数字型，如果不是数字(如：中英文,)不会转化，会显示原内容(字符串型)
+     -->
+
+    <h3>@事件名.stop → 阻止冒泡</h3>
+    <div @click="fatherFn" class="father">
+      <div @click.stop="sonFn" class="son">儿子</div>
+    </div>
+
+    <h3>@事件名.prevent → 阻止默认行为</h3>
+    <a @click.prevent target="" href="http://www.baidu.com">阻止默认行为</a>
+    <!-- a标签的默认行为是在当前窗口中打开一个链接,当用户点击a标签时,浏览器会尝试从href属性中获取URL,并将当前窗口的URL替换为该URL。如果指定了target属性并且值为"_blank",则链接会在新的浏览器窗口或标签页中打开。如果没有指定target属性,则链接会在当前窗口中打开。 -->
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        username: '',
+        age: '',
+      },
+      methods: {
+        fatherFn() {
+          alert('老父亲被点击了')
+        },
+        sonFn(e) {
+          // e.stopPropagation()  // 阻止冒泡行为
+          // e.preventDefault()   // 阻止默认行为
+
+          alert('儿子被点击了')
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+② v-model修饰符
+v-model.trim → 去除首尾空格
+v-model.number → 转数字
+③ 事件修饰符
+@事件名.stop → 阻止冒泡
+@事件名.prevent → 阻止默认行为
+ -->

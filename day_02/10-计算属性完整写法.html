@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <div id="app">
+    姓：<input type="text" v-model="firstName"> +
+    名：<input type="text" v-model="lastName"> <br>=
+    <p>姓名：{{ fullName }}</p>
+    <button @click="changeName()">改名卡</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        firstName: '伞',
+        lastName: '兵',
+      },
+      methods: {
+        changeName() {
+          this.fullName = '吕小布'
+        }
+      },
+      computed: {
+        // 简写 -> 获取 ，没有配置设置的逻辑
+        // fullName() {
+        //   return this.firstName + '' + this.lastName
+        // }
+
+        // 完整写法：获取 + 设置
+        fullName: {
+          // (1) 当 funllName计算属性，被获取求值时，执行get (有缓存，优先读缓存)
+          // 会将，返回值作为，求值的结果
+          get() {
+            // return this.firstName + '' + this.lastName
+            return this.firstName + this.lastName
+          },
+          // (2) 当fullName计算属性，被修改赋值时，执行set
+          // 修改的值，传输给set方法的形参
+          set(newValue) {
+            // const names = newValue.split('') //用空格分隔
+            // this.firstName = names[0]
+            // this.lastName = names[1]
+            console.log(newValue);
+            this.firstName = newValue.slice(0, 1) //取第一个字符
+            this.lastName = newValue.slice(1) // 取第一个字符后面所有的字符
+
+            // slice是数组的一个方法，用于提取数组的一部分元素并返回一个新的数组。它不会改变原始数组，而是返回一个新的子数组
+            // slice(start,end) 提取从start开始到end结束的元素，不包含end
+            // slice(start) 提取从start开始到数组末尾的元素
+            // slice() 提取所有元素
+          }
+        }
+      },
+    })
+  </script>
+</body>
+
+</html>
+
+<!-- 
+计算属性完整写法
+computed: {
+计算属性名: {
+get() {
+一段代码逻辑（计算逻辑）
+return 结果
+},
+set(修改的值) {
+一段代码逻辑（修改逻辑）
+}
+}
+}
+
+计算属性默认的简写，只能读取访问，不能 "修改"。
+如果要 "修改" → 需要写计算属性的完整写法。
+ -->
