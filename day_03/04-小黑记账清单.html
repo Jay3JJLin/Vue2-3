@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <!-- CSS only -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+  <style>
+    .red {
+      color: red !important;
+    }
+
+    .search {
+      width: 300px;
+      margin: 20px 0;
+    }
+
+    .my-form {
+      display: flex;
+      margin: 20px 0;
+    }
+
+    .my-form input {
+      flex: 1;
+      margin-right: 20px;
+    }
+
+    .table> :not(:first-child) {
+      border-top: none;
+    }
+
+    .contain {
+      display: flex;
+      padding: 10px;
+    }
+
+    .list-box {
+      flex: 1;
+      padding: 0 30px;
+    }
+
+    .list-box a {
+      text-decoration: none;
+    }
+
+    .echarts-box {
+      width: 600px;
+      height: 400px;
+      padding: 30px;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+    }
+
+    tfoot {
+      font-weight: bold;
+    }
+
+    @media screen and (max-width: 1000px) {
+      .contain {
+        flex-wrap: wrap;
+      }
+
+      .list-box {
+        width: 100%;
+      }
+
+      .echarts-box {
+        margin-top: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="contain">
+      <!-- 左侧列表 -->
+      <div class="list-box">
+
+        <!-- 添加资产 -->
+        <form class="my-form">
+          <input v-model.trim="name" type="text" class="form-control" placeholder="消费名称" />
+          <input v-model.number="price" type="text" class="form-control" placeholder="消费价格" />
+          <button @click="add" type="button" class="btn btn-primary">添加账单</button>
+        </form>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>编号</th>
+              <th>消费名称</th>
+              <th>消费价格</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in list" ::key="item.id">
+              <!-- 编号希望是连续的，所以用index -->
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.name }}</td>
+              <td :class="{ red: item.price > 500 }">{{ item.price.toFixed(2) }}</td>
+              <td><a @click="del(item.id)" href="javascript:;">删除</a></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">消费总计：{{ totalPrice.toFixed(2) }} </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- 右侧图表 -->
+      <div class="echarts-box" id="main"></div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    /**
+     * 接口文档地址：
+     * https://www.apifox.cn/apidoc/shared-24459455-ebb1-4fdc-8df8-0aff8dc317a8/api-53371058
+     * 
+     * 功能需求：
+     * 1. 基本渲染
+     *    (1) 立刻发送请求获取数据 created
+     *    (2) 拿到数据，存到data的响应式数据中
+     *    (3) 结合数据，进行渲染 v-for
+     *    (4) 消费统计 => 计算属性
+     * 2. 添加功能
+     *    (1) 收集表单数据 v-model
+     *    (2) 给添加按钮注册点击事件，发送添加请求
+     *    (3) 需要重新渲染
+     * 3. 删除功能
+     *    (1) 注册点击事件，传参传 id
+     *    (2) 根据 id 发送删除请求 
+     *    (3) 需要重新渲染
+     * 4. 饼图渲染Echarts
+     *    (1) 初始化一个饼图 echarts.init(dom)  mounted钩子实现,要等DOM渲染完
+     *    (2) 根据数据实时更新饼图 echarts.setOption({ ... })
+     */
+    const app = new Vue({
+      el: '#app',
+      data: {
+        list: [],
+        name: '',
+        price: '',
+      },
+      computed: {
+        totalPrice() {
+          return this.list.reduce((sum, item) => {
+            return sum + item.price
+          }, 0)
+        }
+      },
+      methods: {
+        // 渲染函数
+        async getList() {
+          const res = await axios.get('https://applet-base-api-t.itheima.net/bill', {
+            // 必须在对象里面写params
+            params: {
+              creator: '呱',
+            }
+          })
+          // console.log(res); // 返回的是对象
+          // 接收数据，存到data中
+          this.list = res.data.data
+
+          // 更新图表，所有传过的数据都不需要再传，但整体的层级结构还是要有
+          this.myChart.setOption({
+            series: [
+              {
+                // 要在获取消费清单后，再渲染
+
+                // 将数组中的每一个对象都进行转换处理，得到所需的新数组--map
+                // 如果里面是对象，在外层需要加一层括号()，否则会被识别成代码段
+                data: this.list.map(item => ({ value: item.price, name: item.name }))
+              }
+            ]
+          })
+        },
+        async add() {
+          if (!this.name) {
+            alert('请输入消费名称！')
+            return
+          }
+          if (typeof this.price !== 'number') {
+            alert('请输入正确的消费价格！')
+          }
+
+          // 发送添加请求，先在后台增加，再在前台渲染
+          const res = await axios.post('https://applet-base-api-t.itheima.net/bill', {
+            // 直接写参数，不用写data
+            creator: '呱',
+            name: this.name,
+            price: this.price
+          })
+          // console.log(res);
+          // 重新渲染一次
+          this.getList()
+
+          // 清空输入表单
+          this.name = ''
+          this.price = ''
+        },
+        async del(id) {
+          // 根据id发送删除请求,通过Path的方式
+          const res = await axios.delete(`https://applet-base-api-t.itheima.net/bill/${id}`)
+          // 重新渲染
+          this.getList()
+        }
+      },
+      created() {
+        // const res = await axios.get('https://applet-base-api-t.itheima.net/bill', {
+        //   // 必须在对象里面写params
+        //   params: {
+        //     creator: '呱',
+        //     name: '',
+        //     price: ''
+        //   }
+        // })
+        // // console.log(res);
+        // // 接收数据，存到data中
+        // this.list = res.data.data
+
+        this.getList()
+      },
+      mounted() {
+        // 基于准备好的DOM，初始化echarts实例
+        this.myChart = echarts.init(document.querySelector('#main'))
+
+        // 指定图表的配置项和数据
+        let option = {
+          // 大标题
+          title: {
+            text: '小黑子消费账单列表', // 标题文本
+            subtext: '伞兵一号准备就绪',  // 子标题文本
+            left: 'center' // 控制标题居中
+          },
+          // 提示框
+          tooltip: {
+            trigger: 'item'
+          },
+          // 图例--就是参数列表，彩色竖起一条的那个
+          legend: {
+            orient: 'vertical', // 控制对齐方式，vertical垂直对齐
+            left: 'left' // 在哪显示
+          },
+          // 数据项
+          series: [
+            {
+              name: '消费账单',  // 数据名称
+              type: 'pie',  // 图形类型，比如：饼图
+              radius: '60%', // 半径
+              data: [
+                // 这里的value和name 可以理解成我们的 消费价格和名称
+                // { value: 114514, name: 'ikun手办' }, // 不能写死了
+                // 要在获取消费清单后，再渲染
+
+              ],
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }
+          ]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        this.myChart.setOption(option)
+      },
+    })
+  </script>
+</body>
+
+</html>
+
+
+<!-- 
+案例总结：
+1. 基本渲染
+created 请求数据(封装渲染方法) -> 将数据更新给data -> 数据动态渲染
+2. 添加功能
+收集表单数据v-model -> 点击发送添加请求 -> 重新渲染(封装渲染方法)
+3. 删除功能
+点击按钮传递id -> 根据id发送删除请求 -> 重新渲染(封装渲染方法)
+4. 饼图渲染
+mounted 初始化echarts实例 -> 渲染函数中setOption -> 动态更新饼图(map)
+ -->

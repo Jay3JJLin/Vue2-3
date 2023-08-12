@@ -1,0 +1,23 @@
+win11 的PowerShell 无法运行，请进入cmd
+
+在想创建项目的根目录下运行下面命令
+
+使用步骤：
+1. 全局安装 (一次) ：yarn global add @vue/cli 或 npm i @vue/cli -g
+2. 查看 Vue 版本：vue --version
+3. 创建项目架子：vue create project-name（项目名-不能用中文）
+4. 启动项目： yarn serve 或 npm run serve（找package.json）
+
+注：如果serve在package.json文件的script项中名字被改了，就要用被改后的名字
+
+cmd开始是c盘
+三、使用命令行切换到D盘下的某一目录
+如果我们需要在cmd中切换到E盘下的某一目录，我们可以使用下面的命令：
+1. 打开cmd命令行窗口。
+2. 输入命令：E:，按下回车键。
+3. 输入命令：cd E:\your\path，其中“your\path”是要切换到的目录路径。比如我的是
+   cd E:\是蕾姆啊\前端Web\Vue2+3--案例\day_03
+4. 按下回车键，即可切换到指定目录。
+
+无法使用yarn的，在终端中下载即可 npm i yarn -g   全局安装一下 yarn,前提是安装了node
+
